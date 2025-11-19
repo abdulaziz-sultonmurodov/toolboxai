@@ -2,19 +2,29 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Music, Video, Image as ImageIcon, FileJson, Share2, Menu } from 'lucide-react';
+import { LayoutDashboard, Music, Video, Image as ImageIcon, FileJson, Share2, Menu, Mic } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { UserProfile } from "./UserProfile";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
-const links = [
+type NavLink = {
+  name: string;
+  href: string;
+  icon: any;
+  badge?: string;
+};
+
+
+const links: NavLink[] = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Audio Tools', href: '/dashboard/audio', icon: Music },
   { name: 'Video Tools', href: '/dashboard/video', icon: Video },
   { name: 'Image Tools', href: '/dashboard/image', icon: ImageIcon },
   { name: 'Converter', href: '/dashboard/converter', icon: FileJson },
   { name: 'Socials', href: '/dashboard/socials', icon: Share2 },
+  { name: 'Music ID', href: '/dashboard/music-id', icon: Mic, badge: 'NEW' },
 ];
 
 export const Sidebar = () => {
@@ -86,10 +96,18 @@ export const Sidebar = () => {
                     isActive ? "bg-muted text-primary" : "text-muted-foreground",
                     isCollapsed ? 'justify-center' : ''
                   )}
-                  title={isCollapsed ? link.name : undefined}
                 >
                   <Icon className="h-4 w-4" />
-                  {!isCollapsed && <span>{link.name}</span>}
+                  {!isCollapsed && (
+                    <>
+                      <span>{link.name}</span>
+                      {link.badge && (
+                        <Badge variant="default" className="ml-auto bg-gradient-to-r from-pink-500 to-violet-500 text-white border-0">
+                          {link.badge}
+                        </Badge>
+                      )}
+                    </>
+                  )}
                 </Link>
               );
             })}
