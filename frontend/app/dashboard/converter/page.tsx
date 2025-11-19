@@ -11,7 +11,7 @@ import axios from 'axios';
 import { FaFilePdf, FaImage, FaExchangeAlt } from 'react-icons/fa';
 
 const SUPPORTED_IMAGE_FORMATS = ['png', 'jpg', 'jpeg', 'svg', 'webp', 'bmp', 'gif'];
-const PDF_OUTPUT_FORMATS = ['png', 'jpg', 'jpeg'];
+const PDF_OUTPUT_FORMATS = ['png', 'jpg', 'jpeg', 'svg'];
 
 export default function ConverterPage() {
   const [file, setFile] = useState<File | null>(null);

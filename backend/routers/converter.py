@@ -157,19 +157,21 @@ async def convert_image_to_pdf(
 @router.post("/pdf-to-image")
 async def convert_pdf_to_image(
     file: UploadFile = File(...),
-    format: str = Form("png")  # Output format: png, jpg, jpeg
+    format: str = Form("png")  # Output format: png, jpg, jpeg, svg
 ):
     """Convert PDF to images (one image per page)"""
     try:
-        from pdf2image import convert_from_path
+        import fitz  # PyMuPDF
         import zipfile
+        from PIL import Image
+        import io
         
         print(f"PDF to Image conversion request: filename={file.filename}, output_format={format}")
         
-        if format.lower() not in ['png', 'jpg', 'jpeg']:
+        if format.lower() not in ['png', 'jpg', 'jpeg', 'svg']:
             raise HTTPException(
                 status_code=400,
-                detail="Unsupported output format. Supported: png, jpg, jpeg"
+                detail="Unsupported output format. Supported: png, jpg, jpeg, svg"
             )
         
         file_id = str(uuid4())
@@ -180,10 +182,11 @@ async def convert_pdf_to_image(
             content = await file.read()
             buffer.write(content)
         
-        # Convert PDF to images
+        # Convert PDF to images using PyMuPDF
         try:
-            images = convert_from_path(input_path, dpi=200)
-            print(f"PDF has {len(images)} page(s)")
+            pdf_document = fitz.open(input_path)
+            page_count = len(pdf_document)
+            print(f"PDF has {page_count} page(s)")
         except Exception as e:
             os.remove(input_path)
             raise HTTPException(
@@ -192,27 +195,57 @@ async def convert_pdf_to_image(
             )
         
         # Determine output format
+        is_svg = format.lower() == 'svg'
         output_format = 'JPEG' if format.lower() in ['jpg', 'jpeg'] else 'PNG'
-        output_ext = 'jpg' if format.lower() in ['jpg', 'jpeg'] else 'png'
+        output_ext = format.lower() if format.lower() in ['jpg', 'jpeg', 'svg'] else 'png'
         
         base_filename = os.path.splitext(file.filename)[0] if file.filename else 'converted'
         
-        # If single page, return single image
-        if len(images) == 1:
-            output_filename = f"{base_filename}.{output_ext}"
-            output_path = os.path.join(PROCESSED_DIR, f"{file_id}_{output_filename}")
+        # Convert pages to images
+        output_files = []
+        
+        for page_num in range(page_count):
+            page = pdf_document[page_num]
             
-            images[0].save(output_path, output_format)
+            if is_svg:
+                # Extract SVG
+                svg_content = page.get_svg_image()
+                output_path = os.path.join(PROCESSED_DIR, f"{file_id}_page_{page_num+1}.svg")
+                with open(output_path, "w", encoding="utf-8") as f:
+                    f.write(svg_content)
+                output_files.append(output_path)
+            else:
+                # Render page to pixmap (image) at 200 DPI
+                mat = fitz.Matrix(200/72, 200/72)  # 200 DPI scaling
+                pix = page.get_pixmap(matrix=mat)
+                
+                # Convert pixmap to PIL Image
+                img_data = pix.tobytes("png")
+                img = Image.open(io.BytesIO(img_data))
+                
+                output_path = os.path.join(PROCESSED_DIR, f"{file_id}_page_{page_num+1}.{output_ext}")
+                img.save(output_path, output_format)
+                output_files.append(output_path)
+        
+        pdf_document.close()
+        
+        # If single page, return single file
+        if len(output_files) == 1:
+            final_output_path = os.path.join(PROCESSED_DIR, f"{file_id}_{base_filename}.{output_ext}")
+            # Rename the single file to the final name
+            shutil.move(output_files[0], final_output_path)
             
-            # Clean up
+            # Clean up input
             os.remove(input_path)
             
-            print(f"Single page conversion successful: {output_path}")
+            print(f"Single page conversion successful: {final_output_path}")
+            
+            media_type = "image/svg+xml" if is_svg else f"image/{output_ext}"
             
             return FileResponse(
-                output_path,
-                media_type=f"image/{output_ext}",
-                filename=output_filename
+                final_output_path,
+                media_type=media_type,
+                filename=f"{base_filename}.{output_ext}"
             )
         
         # If multiple pages, create ZIP file
@@ -221,17 +254,14 @@ async def convert_pdf_to_image(
             zip_path = os.path.join(PROCESSED_DIR, f"{file_id}_{zip_filename}")
             
             with zipfile.ZipFile(zip_path, 'w') as zipf:
-                for i, image in enumerate(images, start=1):
+                for i, file_path in enumerate(output_files, start=1):
                     image_filename = f"{base_filename}_page_{i}.{output_ext}"
-                    image_path = os.path.join(PROCESSED_DIR, f"{file_id}_page_{i}.{output_ext}")
+                    zipf.write(file_path, image_filename)
                     
-                    image.save(image_path, output_format)
-                    zipf.write(image_path, image_filename)
-                    
-                    # Clean up individual image
-                    os.remove(image_path)
+                    # Clean up individual file
+                    os.remove(file_path)
             
-            # Clean up
+            # Clean up input
             os.remove(input_path)
             
             print(f"Multi-page conversion successful: {zip_path}")
@@ -240,7 +270,7 @@ async def convert_pdf_to_image(
                 zip_path,
                 media_type="application/zip",
                 filename=zip_filename,
-                headers={"X-Page-Count": str(len(images))}
+                headers={"X-Page-Count": str(len(output_files))}
             )
     
     except HTTPException:
@@ -253,6 +283,7 @@ async def convert_pdf_to_image(
         if 'input_path' in locals() and os.path.exists(input_path):
             os.remove(input_path)
         raise HTTPException(status_code=500, detail=f"Conversion failed: {str(e)}")
+
 
 @router.get("/supported-formats")
 async def get_supported_formats():

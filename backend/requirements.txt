@@ -11,4 +11,4 @@ pydub
 moviepy
 python-dotenv
 img2pdf
-pdf2image
+PyMuPDF
