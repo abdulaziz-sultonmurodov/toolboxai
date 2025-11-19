@@ -6,6 +6,11 @@ venv/
 .env
 .pytest_cache/
 
+# Backend - uploaded and processed files
+backend/uploads/
+backend/processed/
+backend/*.db
+
 # Node
 node_modules/
 .next/

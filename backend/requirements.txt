@@ -12,3 +12,4 @@ moviepy
 python-dotenv
 img2pdf
 PyMuPDF
+yt-dlp

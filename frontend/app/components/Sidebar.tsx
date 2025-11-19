@@ -2,16 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaMusic, FaVideo, FaImage, FaBars, FaExchangeAlt } from "react-icons/fa";
+import { LayoutDashboard, Music, Video, Image as ImageIcon, FileJson, Share2, Menu } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { UserProfile } from "./UserProfile";
+import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/dashboard/audio", label: "Audio Tools", icon: FaMusic },
-  { href: "/dashboard/video", label: "Video Tools", icon: FaVideo },
-  { href: "/dashboard/image", label: "Image Tools", icon: FaImage },
-  { href: "/dashboard/converter", label: "Converter", icon: FaExchangeAlt },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Audio Tools', href: '/dashboard/audio', icon: Music },
+  { name: 'Video Tools', href: '/dashboard/video', icon: Video },
+  { name: 'Image Tools', href: '/dashboard/image', icon: ImageIcon },
+  { name: 'Converter', href: '/dashboard/converter', icon: FileJson },
+  { name: 'Socials', href: '/dashboard/socials', icon: Share2 },
 ];
 
 export const Sidebar = () => {
@@ -24,7 +27,7 @@ export const Sidebar = () => {
       const collapsed = JSON.parse(savedState);
       setIsCollapsed(collapsed);
       // Dispatch event on mount to sync layout
-      window.dispatchEvent(new CustomEvent('sidebarToggle', { detail: collapsed }));
+      window.dispatchEvent(new CustomEvent('sidebarToggle', { detail: { isCollapsed: collapsed } }));
     }
   }, []);
 
@@ -34,7 +37,7 @@ export const Sidebar = () => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(newState));
     
     // Dispatch custom event for same-tab updates
-    window.dispatchEvent(new CustomEvent('sidebarToggle', { detail: newState }));
+    window.dispatchEvent(new CustomEvent('sidebarToggle', { detail: { isCollapsed: newState } }));
     
     // Dispatch storage event for cross-tab updates (optional, but good practice)
     window.dispatchEvent(new StorageEvent('storage', {
@@ -45,13 +48,17 @@ export const Sidebar = () => {
 
   return (
     <aside 
-      className={`fixed left-0 top-0 z-40 h-screen border-r bg-background transition-all duration-300 ${
+      className={cn(
+        "fixed left-0 top-0 z-40 h-screen border-r bg-background transition-all duration-300",
         isCollapsed ? 'w-20' : 'w-64'
-      }`}
+      )}
     >
       <div className="flex h-full flex-col">
         {/* Header */}
-        <div className={`flex h-14 items-center border-b px-4 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+        <div className={cn(
+          "flex h-14 items-center border-b px-4",
+          isCollapsed ? 'justify-center' : 'justify-between'
+        )}>
           {!isCollapsed && (
             <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
               <span className="bg-gradient-to-r from-pink-500 to-violet-500 bg-clip-text text-transparent">
@@ -60,7 +67,7 @@ export const Sidebar = () => {
             </Link>
           )}
           <Button variant="ghost" size="icon" onClick={toggleSidebar} title={isCollapsed ? "Expand" : "Collapse"}>
-            <FaBars />
+            <Menu className="h-4 w-4" />
           </Button>
         </div>
 
@@ -74,13 +81,15 @@ export const Sidebar = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
-                    isActive ? "bg-muted text-primary" : "text-muted-foreground"
-                  } ${isCollapsed ? 'justify-center' : ''}`}
-                  title={isCollapsed ? link.label : undefined}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                    isActive ? "bg-muted text-primary" : "text-muted-foreground",
+                    isCollapsed ? 'justify-center' : ''
+                  )}
+                  title={isCollapsed ? link.name : undefined}
                 >
                   <Icon className="h-4 w-4" />
-                  {!isCollapsed && <span>{link.label}</span>}
+                  {!isCollapsed && <span>{link.name}</span>}
                 </Link>
               );
             })}
