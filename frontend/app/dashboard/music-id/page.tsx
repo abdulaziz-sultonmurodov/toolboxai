@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Mic, Upload, Music, ExternalLink, StopCircle } from "lucide-react";
+import { Loader2, Mic, Upload, Music, ExternalLink, StopCircle, Play, Pause } from "lucide-react";
 import { toast } from "sonner";
 
 interface SongResult {
@@ -16,6 +16,7 @@ interface SongResult {
   album_art?: string;
   spotify_url?: string;
   apple_music_url?: string;
+  preview_url?: string;
   message?: string;
 }
 
@@ -30,6 +31,8 @@ export default function MusicIDPage() {
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -138,6 +141,37 @@ export default function MusicIDPage() {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const togglePlayPause = () => {
+    if (!audioRef.current) return;
+    
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleEnded = () => setIsPlaying(false);
+    const handlePause = () => setIsPlaying(false);
+    const handlePlay = () => setIsPlaying(true);
+
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('play', handlePlay);
+
+    return () => {
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('play', handlePlay);
+    };
+  }, []);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -284,6 +318,58 @@ export default function MusicIDPage() {
                         Release Date
                       </p>
                       <p className="text-lg">{result.release_date}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Preview Player or Message */}
+                <div className="mt-6">
+                  {result.preview_url ? (
+                    <div className="p-4 bg-muted/50 rounded-lg border">
+                      <div className="flex items-center gap-4">
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="h-12 w-12 rounded-full"
+                          onClick={togglePlayPause}
+                        >
+                          {isPlaying ? (
+                            <Pause className="h-5 w-5" />
+                          ) : (
+                            <Play className="h-5 w-5 ml-0.5" />
+                          )}
+                        </Button>
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold mb-1">Preview (30 seconds)</p>
+                          <div className="flex items-center gap-1">
+                            {[...Array(20)].map((_, i) => (
+                              <div
+                                key={i}
+                                className={`h-1 w-full rounded-full transition-all ${
+                                  isPlaying
+                                    ? 'bg-gradient-to-r from-pink-500 to-violet-500 animate-pulse'
+                                    : 'bg-muted-foreground/30'
+                                }`}
+                                style={{
+                                  height: isPlaying ? `${Math.random() * 16 + 4}px` : '4px',
+                                  animationDelay: `${i * 0.05}s`
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <audio ref={audioRef} src={result.preview_url} />
+                    </div>
+                  ) : (
+                    <div className="p-4 bg-muted/30 rounded-lg border border-dashed text-center">
+                      <Music className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+                      <p className="text-sm text-muted-foreground">
+                        Preview not available for this track
+                      </p>
+                      <p className="text-xs text-muted-foreground/70 mt-1">
+                        Listen on Spotify or Apple Music below
+                      </p>
                     </div>
                   )}
                 </div>

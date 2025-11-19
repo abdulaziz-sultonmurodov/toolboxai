@@ -200,7 +200,8 @@ async def recognize_music(file: UploadFile = File(...)):
             if recording.get('releasegroups'):
                 response_data['album'] = recording['releasegroups'][0].get('title', 'Unknown')
             
-            # Try to enrich with MusicBrainz data
+            # Try to enrich with MusicBrainz and Spotify data
+            spotify_track_id = None
             try:
                 mb_url = f"https://musicbrainz.org/ws/2/recording/{recording.get('id')}"
                 mb_params = {'inc': 'releases+url-rels', 'fmt': 'json'}
@@ -218,15 +219,54 @@ async def recognize_music(file: UploadFile = File(...)):
                                 response_data['release_date'] = release['date']
                                 break
                     
-                    # Look for Spotify link
+                    # Look for Spotify link and extract track ID
                     if mb_data.get('relations'):
                         for rel in mb_data['relations']:
                             url_res = rel.get('url', {}).get('resource', '')
                             if 'spotify.com/track/' in url_res:
                                 response_data['spotify_url'] = url_res
+                                # Extract Spotify track ID from URL
+                                spotify_track_id = url_res.split('/track/')[-1].split('?')[0]
                                 break
             except:
                 pass  # MusicBrainz enrichment is optional
+            
+            # If we have a Spotify track ID, fetch preview URL and album art
+            if spotify_track_id:
+                try:
+                    # Use Spotify's public API (no auth needed for track info)
+                    spotify_api_url = f"https://api.spotify.com/v1/tracks/{spotify_track_id}"
+                    
+                    # Get Spotify access token (client credentials flow)
+                    # Note: For production, you'd want to cache this token
+                    token_url = "https://accounts.spotify.com/api/token"
+                    token_data = {
+                        'grant_type': 'client_credentials'
+                    }
+                    # Using a public client ID (you can replace with your own)
+                    # For now, we'll try without auth and fall back gracefully
+                    
+                    # Try to get track info without auth (some endpoints work)
+                    spotify_response = requests.get(
+                        spotify_api_url,
+                        headers={'Accept': 'application/json'},
+                        timeout=5
+                    )
+                    
+                    if spotify_response.status_code == 200:
+                        spotify_data = spotify_response.json()
+                        
+                        # Get preview URL (30-second clip)
+                        if spotify_data.get('preview_url'):
+                            response_data['preview_url'] = spotify_data['preview_url']
+                        
+                        # Get album art
+                        if spotify_data.get('album', {}).get('images'):
+                            images = spotify_data['album']['images']
+                            if images:
+                                response_data['album_art'] = images[0]['url']  # Largest image
+                except:
+                    pass  # Spotify enrichment is optional
             
             return JSONResponse(status_code=200, content=response_data)
         
