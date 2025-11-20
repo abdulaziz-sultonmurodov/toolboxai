@@ -368,7 +368,7 @@ export default function MusicIDPage() {
                         Preview not available for this track
                       </p>
                       <p className="text-xs text-muted-foreground/70 mt-1">
-                        Listen on Spotify or Apple Music below
+                        Listen on Spotify or Apple Music
                       </p>
                     </div>
                   )}
