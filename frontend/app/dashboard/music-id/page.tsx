@@ -26,12 +26,16 @@ export default function MusicIDPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SongResult | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioLevels, setAudioLevels] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0]);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
@@ -47,16 +51,48 @@ export default function MusicIDPage() {
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
+      // Setup audio visualization
+      const audioContext = new AudioContext();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 32;
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+      
+      // Start visualization
+      const visualize = () => {
+        if (!analyserRef.current) return;
+        const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+        analyserRef.current.getByteFrequencyData(dataArray);
+        const levels = Array.from(dataArray).slice(0, 8).map(v => v / 255);
+        setAudioLevels(levels);
+        animationFrameRef.current = requestAnimationFrame(visualize);
+      };
+      visualize();
+
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
           chunksRef.current.push(e.data);
         }
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         setAudioBlob(blob);
         stream.getTracks().forEach(track => track.stop());
+        
+        // Stop visualization
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+        }
+        setAudioLevels([0, 0, 0, 0, 0, 0, 0, 0]);
+        
+        // Auto-identify the song
+        await identifySong(blob);
       };
 
       mediaRecorder.start();
@@ -64,12 +100,18 @@ export default function MusicIDPage() {
       setRecordingTime(0);
       setResult(null);
 
-      // Start timer
+      // Start timer - auto-stop at 30 seconds
       timerRef.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
+        setRecordingTime(prev => {
+          const newTime = prev + 1;
+          if (newTime >= 30) {
+            stopRecording();
+          }
+          return newTime;
+        });
       }, 1000);
 
-      toast.success("Recording started! Record at least 10 seconds for best results.");
+      toast.success("Listening to music... Will auto-stop at 30 seconds");
     } catch (error) {
       toast.error("Failed to access microphone. Please grant permission.");
       console.error(error);
@@ -84,7 +126,6 @@ export default function MusicIDPage() {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
-      toast.info("Recording stopped. Click 'Identify Song' to analyze.");
     }
   };
 
@@ -93,22 +134,26 @@ export default function MusicIDPage() {
     if (file) {
       setAudioBlob(file);
       setResult(null);
-      toast.success(`File "${file.name}" loaded. Click 'Identify Song' to analyze.`);
+      // Auto-identify uploaded file
+      identifySong(file);
+      toast.success(`Analyzing "${file.name}"...`);
     }
   };
 
-  const identifySong = async () => {
-    if (!audioBlob) {
+  const identifySong = async (blob?: Blob) => {
+    const audioToIdentify = blob || audioBlob;
+    
+    if (!audioToIdentify) {
       toast.error("Please record audio or upload a file first.");
       return;
     }
 
     setLoading(true);
-    const loadingToast = toast.loading("Analyzing audio... This may take 10-20 seconds.");
+    const loadingToast = toast.loading("Identifying song... This may take 10-20 seconds.");
 
     try {
       const formData = new FormData();
-      formData.append('file', audioBlob, 'recording.webm');
+      formData.append('file', audioToIdentify, 'recording.webm');
 
       const response = await fetch('http://localhost:8000/api/v1/music-id/recognize', {
         method: 'POST',
@@ -126,7 +171,10 @@ export default function MusicIDPage() {
       if (data.recognized) {
         toast.success(`Song identified: ${data.title} by ${data.artist}`, { id: loadingToast });
       } else {
-        toast.warning(data.message || "Song not recognized", { id: loadingToast });
+        toast.error("Song not recognized. Try playing the music louder or closer to the microphone.", { 
+          id: loadingToast,
+          duration: 5000 
+        });
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to identify song. Please try again.", { id: loadingToast });
@@ -185,9 +233,9 @@ export default function MusicIDPage() {
       {/* Recording Controls */}
       <Card className="border-2">
         <CardHeader>
-          <CardTitle>Record or Upload Audio</CardTitle>
+          <CardTitle>Listen to Music</CardTitle>
           <CardDescription>
-            Record at least 10-15 seconds of clear audio for best results, or upload an existing audio file.
+            Start listening for up to 30 seconds or upload an audio file. Song will be identified automatically!
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -200,7 +248,7 @@ export default function MusicIDPage() {
                 disabled={loading}
               >
                 <Mic className="h-5 w-5 mr-2" />
-                Start Recording
+                Start Listening
               </Button>
             ) : (
               <Button 
@@ -210,7 +258,7 @@ export default function MusicIDPage() {
                 onClick={stopRecording}
               >
                 <StopCircle className="h-5 w-5 mr-2" />
-                Stop Recording ({formatTime(recordingTime)})
+                Stop Listening ({formatTime(recordingTime)}/30s)
               </Button>
             )}
             
@@ -233,33 +281,30 @@ export default function MusicIDPage() {
             />
           </div>
 
-          {audioBlob && !isRecording && (
-            <div className="pt-4 border-t">
-              <Button 
-                size="lg" 
-                className="w-full bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600"
-                onClick={identifySong}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Identifying...
-                  </>
-                ) : (
-                  <>
-                    <Music className="h-5 w-5 mr-2" />
-                    Identify Song
-                  </>
-                )}
-              </Button>
+          {isRecording && (
+            <div className="space-y-4 p-6 bg-gradient-to-r from-pink-500/10 to-violet-500/10 border border-pink-500/20 rounded-lg">
+              <div className="flex items-center justify-center gap-3">
+                <div className="h-3 w-3 bg-pink-500 rounded-full animate-pulse" />
+                <span className="text-lg font-semibold">Listening... {formatTime(recordingTime)}/30s</span>
+              </div>
+              
+              {/* Audio Waveform Visualization */}
+              <div className="flex items-center justify-center gap-1 h-16">
+                {audioLevels.map((level, i) => (
+                  <div
+                    key={i}
+                    className="w-2 bg-gradient-to-t from-pink-500 to-violet-500 rounded-full transition-all duration-75"
+                    style={{ height: `${Math.max(level * 100, 10)}%` }}
+                  />
+                ))}
+              </div>
             </div>
           )}
-
-          {isRecording && (
-            <div className="flex items-center justify-center gap-3 p-6 bg-red-500/10 border border-red-500/20 rounded-lg animate-pulse">
-              <div className="h-3 w-3 bg-red-500 rounded-full animate-pulse" />
-              <span className="text-lg font-semibold">Recording... {formatTime(recordingTime)}</span>
+          
+          {loading && !isRecording && (
+            <div className="flex items-center justify-center gap-3 p-6 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+              <span className="text-lg font-semibold">Identifying song...</span>
             </div>
           )}
         </CardContent>
