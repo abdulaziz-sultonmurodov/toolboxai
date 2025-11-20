@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Music, Video, Image as ImageIcon, FileJson, Share2, Menu, Mic } from 'lucide-react';
+import { LayoutDashboard, Music, Video, Image as ImageIcon, FileJson, Share2, Menu, Mic, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { UserProfile } from "./UserProfile";
@@ -16,7 +16,6 @@ type NavLink = {
   badge?: string;
 };
 
-
 const links: NavLink[] = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Audio Tools', href: '/dashboard/audio', icon: Music },
@@ -27,7 +26,12 @@ const links: NavLink[] = [
   { name: 'Music ID', href: '/dashboard/music-id', icon: Mic, badge: 'NEW' },
 ];
 
-export const Sidebar = () => {
+interface SidebarProps {
+  isMobileMenuOpen?: boolean;
+  setIsMobileMenuOpen?: (open: boolean) => void;
+}
+
+export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: SidebarProps) => {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -56,28 +60,59 @@ export const Sidebar = () => {
     }));
   };
 
+  const handleLinkClick = () => {
+    // Close mobile menu when a link is clicked
+    if (setIsMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  };
+
   return (
     <aside 
       className={cn(
         "fixed left-0 top-0 z-40 h-screen border-r bg-background transition-all duration-300",
-        isCollapsed ? 'w-20' : 'w-64'
+        // Desktop behavior
+        "lg:translate-x-0",
+        isCollapsed ? 'lg:w-20' : 'lg:w-64',
+        // Mobile behavior (drawer)
+        "w-64",
+        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}
     >
       <div className="flex h-full flex-col">
         {/* Header */}
         <div className={cn(
           "flex h-14 items-center border-b px-4",
-          isCollapsed ? 'justify-center' : 'justify-between'
+          isCollapsed ? 'lg:justify-center' : 'justify-between'
         )}>
           {!isCollapsed && (
-            <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
+            <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl" onClick={handleLinkClick}>
               <span className="bg-gradient-to-r from-pink-500 to-violet-500 bg-clip-text text-transparent">
                 DailyTools
               </span>
             </Link>
           )}
-          <Button variant="ghost" size="icon" onClick={toggleSidebar} title={isCollapsed ? "Expand" : "Collapse"}>
+          
+          {/* Desktop toggle button */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleSidebar} 
+            title={isCollapsed ? "Expand" : "Collapse"}
+            className="hidden lg:flex"
+          >
             <Menu className="h-4 w-4" />
+          </Button>
+
+          {/* Mobile close button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsMobileMenuOpen?.(false)}
+            className="lg:hidden ml-auto"
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
           </Button>
         </div>
 
@@ -91,18 +126,20 @@ export const Sidebar = () => {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={handleLinkClick}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                    "flex items-center gap-3 rounded-lg px-3 py-3 transition-all hover:text-primary min-h-[44px]",
                     isActive ? "bg-muted text-primary" : "text-muted-foreground",
-                    isCollapsed ? 'justify-center' : ''
+                    isCollapsed ? 'lg:justify-center' : ''
                   )}
+                  title={isCollapsed ? link.name : undefined}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5 flex-shrink-0" />
                   {!isCollapsed && (
                     <>
-                      <span>{link.name}</span>
+                      <span className="flex-1">{link.name}</span>
                       {link.badge && (
-                        <Badge variant="default" className="ml-auto bg-gradient-to-r from-pink-500 to-violet-500 text-white border-0">
+                        <Badge variant="default" className="ml-auto bg-gradient-to-r from-pink-500 to-violet-500 text-white border-0 text-xs">
                           {link.badge}
                         </Badge>
                       )}

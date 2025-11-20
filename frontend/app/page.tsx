@@ -19,14 +19,14 @@ export default function Home() {
             <span className="flex h-2 w-2 rounded-full bg-green-500 mr-2"></span>
             New: PDF to Image Converter
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text text-transparent">
-            Master Your Digital Life <br /> with Premium Tools
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text text-transparent px-4">
+            Master Your Digital Life <br className="hidden sm:block" /> with Premium Tools
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed px-4">
             A complete suite of AI-powered tools for audio, video, and image processing. 
             Simple, fast, and secure. No installation required.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
             <Button size="lg" className="font-bold text-lg h-12 px-8 rounded-full shadow-lg shadow-primary/20 transition-transform hover:scale-105" asChild>
               <Link href="/signup">Get Started for Free</Link>
             </Button>
