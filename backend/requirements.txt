@@ -17,3 +17,4 @@ requests
 pyacoustid
 audioread
 chromaprint
+email-validator
