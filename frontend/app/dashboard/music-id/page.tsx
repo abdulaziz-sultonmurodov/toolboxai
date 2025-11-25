@@ -1,9 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState, useRef, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Mic, Upload, Music, ExternalLink, StopCircle, Play, Pause } from "lucide-react";
+import {
+  Loader2,
+  Mic,
+  Upload,
+  Music,
+  ExternalLink,
+  StopCircle,
+  Play,
+  Pause,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface SongResult {
@@ -26,8 +41,10 @@ export default function MusicIDPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SongResult | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [audioLevels, setAudioLevels] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0]);
-  
+  const [audioLevels, setAudioLevels] = useState<number[]>([
+    0, 0, 0, 0, 0, 0, 0, 0,
+  ]);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -59,13 +76,15 @@ export default function MusicIDPage() {
       analyser.fftSize = 32;
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
-      
+
       // Start visualization
       const visualize = () => {
         if (!analyserRef.current) return;
         const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
         analyserRef.current.getByteFrequencyData(dataArray);
-        const levels = Array.from(dataArray).slice(0, 8).map(v => v / 255);
+        const levels = Array.from(dataArray)
+          .slice(0, 8)
+          .map((v) => v / 255);
         setAudioLevels(levels);
         animationFrameRef.current = requestAnimationFrame(visualize);
       };
@@ -78,10 +97,10 @@ export default function MusicIDPage() {
       };
 
       mediaRecorder.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         setAudioBlob(blob);
-        stream.getTracks().forEach(track => track.stop());
-        
+        stream.getTracks().forEach((track) => track.stop());
+
         // Stop visualization
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);
@@ -90,7 +109,7 @@ export default function MusicIDPage() {
           audioContextRef.current.close();
         }
         setAudioLevels([0, 0, 0, 0, 0, 0, 0, 0]);
-        
+
         // Auto-identify the song
         await identifySong(blob);
       };
@@ -102,7 +121,7 @@ export default function MusicIDPage() {
 
       // Start timer - auto-stop at 30 seconds
       timerRef.current = setInterval(() => {
-        setRecordingTime(prev => {
+        setRecordingTime((prev) => {
           const newTime = prev + 1;
           if (newTime >= 30) {
             stopRecording();
@@ -142,42 +161,55 @@ export default function MusicIDPage() {
 
   const identifySong = async (blob?: Blob) => {
     const audioToIdentify = blob || audioBlob;
-    
+
     if (!audioToIdentify) {
       toast.error("Please record audio or upload a file first.");
       return;
     }
 
     setLoading(true);
-    const loadingToast = toast.loading("Identifying song... This may take 10-20 seconds.");
+    const loadingToast = toast.loading(
+      "Identifying song... This may take 10-20 seconds."
+    );
 
     try {
       const formData = new FormData();
-      formData.append('file', audioToIdentify, 'recording.webm');
+      formData.append("file", audioToIdentify, "recording.webm");
 
-      const response = await fetch('http://localhost:8000/api/v1/music-id/recognize', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/music-id/recognize`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || 'Failed to identify song');
+        throw new Error(error.detail || "Failed to identify song");
       }
 
       const data: SongResult = await response.json();
       setResult(data);
 
       if (data.recognized) {
-        toast.success(`Song identified: ${data.title} by ${data.artist}`, { id: loadingToast });
-      } else {
-        toast.error("Song not recognized. Try playing the music louder or closer to the microphone.", { 
+        toast.success(`Song identified: ${data.title} by ${data.artist}`, {
           id: loadingToast,
-          duration: 5000 
         });
+      } else {
+        toast.error(
+          "Song not recognized. Try playing the music louder or closer to the microphone.",
+          {
+            id: loadingToast,
+            duration: 5000,
+          }
+        );
       }
     } catch (error: any) {
-      toast.error(error.message || "Failed to identify song. Please try again.", { id: loadingToast });
+      toast.error(
+        error.message || "Failed to identify song. Please try again.",
+        { id: loadingToast }
+      );
       console.error(error);
     } finally {
       setLoading(false);
@@ -187,12 +219,12 @@ export default function MusicIDPage() {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const togglePlayPause = () => {
     if (!audioRef.current) return;
-    
+
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -210,14 +242,14 @@ export default function MusicIDPage() {
     const handlePause = () => setIsPlaying(false);
     const handlePlay = () => setIsPlaying(true);
 
-    audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('pause', handlePause);
-    audio.addEventListener('play', handlePlay);
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("pause", handlePause);
+    audio.addEventListener("play", handlePlay);
 
     return () => {
-      audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('pause', handlePause);
-      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("pause", handlePause);
+      audio.removeEventListener("play", handlePlay);
     };
   }, []);
 
@@ -226,7 +258,8 @@ export default function MusicIDPage() {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Music ID</h1>
         <p className="text-muted-foreground">
-          Identify any song by recording audio or uploading a file. Like Shazam, but built into your toolkit!
+          Identify any song by recording audio or uploading a file. Like Shazam,
+          but built into your toolkit!
         </p>
       </div>
 
@@ -235,14 +268,15 @@ export default function MusicIDPage() {
         <CardHeader>
           <CardTitle>Listen to Music</CardTitle>
           <CardDescription>
-            Start listening for up to 30 seconds or upload an audio file. Song will be identified automatically!
+            Start listening for up to 30 seconds or upload an audio file. Song
+            will be identified automatically!
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-3">
             {!isRecording ? (
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="flex-1"
                 onClick={startRecording}
                 disabled={loading}
@@ -251,8 +285,8 @@ export default function MusicIDPage() {
                 Start Listening
               </Button>
             ) : (
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="destructive"
                 className="flex-1"
                 onClick={stopRecording}
@@ -261,9 +295,9 @@ export default function MusicIDPage() {
                 Stop Listening ({formatTime(recordingTime)}/30s)
               </Button>
             )}
-            
-            <Button 
-              size="lg" 
+
+            <Button
+              size="lg"
               variant="outline"
               className="flex-1"
               onClick={() => fileInputRef.current?.click()}
@@ -285,9 +319,11 @@ export default function MusicIDPage() {
             <div className="space-y-4 p-6 bg-gradient-to-r from-pink-500/10 to-violet-500/10 border border-pink-500/20 rounded-lg">
               <div className="flex items-center justify-center gap-3">
                 <div className="h-3 w-3 bg-pink-500 rounded-full animate-pulse" />
-                <span className="text-lg font-semibold">Listening... {formatTime(recordingTime)}/30s</span>
+                <span className="text-lg font-semibold">
+                  Listening... {formatTime(recordingTime)}/30s
+                </span>
               </div>
-              
+
               {/* Audio Waveform Visualization */}
               <div className="flex items-center justify-center gap-1 h-16">
                 {audioLevels.map((level, i) => (
@@ -300,7 +336,7 @@ export default function MusicIDPage() {
               </div>
             </div>
           )}
-          
+
           {loading && !isRecording && (
             <div className="flex items-center justify-center gap-3 p-6 bg-blue-500/10 border border-blue-500/20 rounded-lg">
               <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
@@ -319,9 +355,9 @@ export default function MusicIDPage() {
               <div className="aspect-square relative bg-gradient-to-br from-pink-500/20 to-violet-500/20">
                 {result.album_art ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img 
-                    src={result.album_art} 
-                    alt={result.title} 
+                  <img
+                    src={result.album_art}
+                    alt={result.title}
                     className="object-cover w-full h-full"
                   />
                 ) : (
@@ -340,7 +376,7 @@ export default function MusicIDPage() {
                     </p>
                     <h2 className="text-3xl font-bold">{result.title}</h2>
                   </div>
-                  
+
                   <div>
                     <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold mb-1">
                       Artist
@@ -348,7 +384,7 @@ export default function MusicIDPage() {
                     <p className="text-xl">{result.artist}</p>
                   </div>
 
-                  {result.album && result.album !== 'Unknown' && (
+                  {result.album && result.album !== "Unknown" && (
                     <div>
                       <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold mb-1">
                         Album
@@ -385,19 +421,23 @@ export default function MusicIDPage() {
                           )}
                         </Button>
                         <div className="flex-1">
-                          <p className="text-sm font-semibold mb-1">Preview (30 seconds)</p>
+                          <p className="text-sm font-semibold mb-1">
+                            Preview (30 seconds)
+                          </p>
                           <div className="flex items-center gap-1">
                             {[...Array(20)].map((_, i) => (
                               <div
                                 key={i}
                                 className={`h-1 w-full rounded-full transition-all ${
                                   isPlaying
-                                    ? 'bg-gradient-to-r from-pink-500 to-violet-500 animate-pulse'
-                                    : 'bg-muted-foreground/30'
+                                    ? "bg-gradient-to-r from-pink-500 to-violet-500 animate-pulse"
+                                    : "bg-muted-foreground/30"
                                 }`}
                                 style={{
-                                  height: isPlaying ? `${Math.random() * 16 + 4}px` : '4px',
-                                  animationDelay: `${i * 0.05}s`
+                                  height: isPlaying
+                                    ? `${Math.random() * 16 + 4}px`
+                                    : "4px",
+                                  animationDelay: `${i * 0.05}s`,
                                 }}
                               />
                             ))}
@@ -422,25 +462,33 @@ export default function MusicIDPage() {
                 {/* Streaming Links */}
                 <div className="flex flex-col sm:flex-row gap-3 mt-6">
                   {result.spotify_url && (
-                    <Button 
-                      size="lg" 
+                    <Button
+                      size="lg"
                       className="flex-1 bg-green-600 hover:bg-green-700"
                       asChild
                     >
-                      <a href={result.spotify_url} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={result.spotify_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Open in Spotify
                       </a>
                     </Button>
                   )}
                   {result.apple_music_url && (
-                    <Button 
-                      size="lg" 
+                    <Button
+                      size="lg"
                       variant="secondary"
                       className="flex-1"
                       asChild
                     >
-                      <a href={result.apple_music_url} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={result.apple_music_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Open in Apple Music
                       </a>
@@ -452,9 +500,12 @@ export default function MusicIDPage() {
           ) : (
             <CardContent className="p-8 text-center">
               <Music className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-xl font-semibold mb-2">Song Not Recognized</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Song Not Recognized
+              </h3>
               <p className="text-muted-foreground">
-                {result.message || "Try recording a longer sample or ensure the audio is clear and recognizable."}
+                {result.message ||
+                  "Try recording a longer sample or ensure the audio is clear and recognizable."}
               </p>
             </CardContent>
           )}

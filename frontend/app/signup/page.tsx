@@ -1,33 +1,42 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Navbar } from "../components/Navbar";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import axios from 'axios';
+import axios from "axios";
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSignup = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/auth/signup', {
-        email,
-        password
-      });
-      localStorage.setItem('token', response.data.access_token);
-      router.push('/dashboard');
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/signup`,
+        {
+          email,
+          password,
+        }
+      );
+      localStorage.setItem("token", response.data.access_token);
+      router.push("/dashboard");
     } catch (error) {
-      console.error('Signup failed', error);
-      alert('Signup failed. Please try again.');
+      console.error("Signup failed", error);
+      alert("Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -45,32 +54,35 @@ export default function SignupPage() {
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="m@example.com" 
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
+              <Input
+                id="password"
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <Button 
-              className="w-full" 
+            <Button
+              className="w-full"
               disabled={loading}
               onClick={handleSignup}
             >
               {loading ? "Signing up..." : "Sign Up"}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
-              Already have an account? <Link href="/login" className="text-primary hover:underline">Login</Link>
+              Already have an account?{" "}
+              <Link href="/login" className="text-primary hover:underline">
+                Login
+              </Link>
             </div>
           </CardContent>
         </Card>

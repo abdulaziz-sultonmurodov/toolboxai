@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import axios from 'axios';
-import { FaVideo, FaVolumeMute } from 'react-icons/fa';
+import axios from "axios";
+import { FaVideo, FaVolumeMute } from "react-icons/fa";
 
 export default function VideoToolsPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -24,18 +24,24 @@ export default function VideoToolsPage() {
 
     setProcessing(true);
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/video/remove-sound', formData, {
-        responseType: 'blob',
-      });
-      
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/video/remove-sound`,
+        formData,
+        {
+          responseType: "blob",
+        }
+      );
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       setDownloadUrl(url);
     } catch (error) {
-      console.error('Error removing sound:', error);
-      alert('Failed to remove sound. Make sure ffmpeg is installed on the server.');
+      console.error("Error removing sound:", error);
+      alert(
+        "Failed to remove sound. Make sure ffmpeg is installed on the server."
+      );
     } finally {
       setProcessing(false);
     }
@@ -73,7 +79,7 @@ export default function VideoToolsPage() {
             </div>
 
             {file && (
-              <Button 
+              <Button
                 className="w-full font-semibold"
                 disabled={processing}
                 onClick={handleRemoveSound}
@@ -84,14 +90,22 @@ export default function VideoToolsPage() {
 
             {downloadUrl && (
               <div className="p-4 rounded-lg bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-900">
-                <p className="text-green-700 dark:text-green-400 font-semibold mb-2">Success! Video is ready.</p>
-                <video controls src={downloadUrl} className="w-full mb-2 max-h-60" />
-                <Button 
+                <p className="text-green-700 dark:text-green-400 font-semibold mb-2">
+                  Success! Video is ready.
+                </p>
+                <video
+                  controls
+                  src={downloadUrl}
+                  className="w-full mb-2 max-h-60"
+                />
+                <Button
                   asChild
                   variant="outline"
                   className="w-full border-green-200 text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-900/50"
                 >
-                  <a href={downloadUrl} download={`muted_${file?.name}`}>Download Muted Video</a>
+                  <a href={downloadUrl} download={`muted_${file?.name}`}>
+                    Download Muted Video
+                  </a>
                 </Button>
               </div>
             )}
