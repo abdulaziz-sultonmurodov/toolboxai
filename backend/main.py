@@ -3,15 +3,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 import models
 from routers import auth, audio, video, image, converter, socials, music_recognition
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Daily Life Tools API")
 
-# CORS
+# Get frontend URL from environment variable
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
+# CORS - allow frontend URL
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[FRONTEND_URL, "http://localhost:3000"],  # Include localhost for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

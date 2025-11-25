@@ -5,6 +5,7 @@ A comprehensive web application for audio, video, and image processing with AI-p
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - **Node.js** (v18 or higher)
 - **Python** (v3.8 or higher)
 - **PostgreSQL** (for database)
@@ -14,6 +15,7 @@ A comprehensive web application for audio, video, and image processing with AI-p
 ## 📦 Installation
 
 ### 1. Clone the Repository
+
 ```bash
 git clone <your-repo-url>
 cd toolbox
@@ -22,19 +24,23 @@ cd toolbox
 ### 2. Backend Setup
 
 #### Install Python Dependencies
+
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
 #### Configure Environment Variables
+
 Create a `.env` file in the `backend` folder:
+
 ```bash
 # Copy from example
 cp .env.example .env
 ```
 
 Edit `.env` and add your credentials:
+
 ```env
 # Database
 POSTGRES_USER=your_username
@@ -46,12 +52,15 @@ ACOUSTID_API_KEY=your_api_key_here
 ```
 
 **Get FREE AcoustID API Key:**
+
 1. Visit https://acoustid.org/new-application
 2. Register your app (takes 1 minute)
 3. Copy the API key to your `.env` file
 
 #### Install fpcalc (for Music ID feature)
+
 Download and install fpcalc for audio fingerprinting:
+
 - **Windows**: https://github.com/acoustid/chromaprint/releases/download/v1.6.0/chromaprint-fpcalc-1.6.0-windows-x86_64.zip
 - Extract and copy `fpcalc.exe` to `backend` folder or add to PATH
 
@@ -60,6 +69,7 @@ See `fpcalc_install.md` for detailed instructions.
 ### 3. Frontend Setup
 
 #### Install Node Dependencies
+
 ```bash
 cd ../frontend
 npm install
@@ -70,6 +80,7 @@ npm install
 ## ▶️ Running the Application
 
 ### Start Backend Server
+
 ```bash
 cd backend
 uvicorn main:app --reload
@@ -78,6 +89,7 @@ uvicorn main:app --reload
 Backend will run on: **http://localhost:8000**
 
 ### Start Frontend Development Server
+
 ```bash
 cd frontend
 npm run dev
@@ -122,22 +134,26 @@ Frontend will run on: **http://localhost:3000**
 ### Backend Issues
 
 **Port already in use:**
+
 ```bash
 # Use a different port
 uvicorn main:app --reload --port 8001
 ```
 
 **Database connection error:**
+
 - Make sure PostgreSQL is running
 - Check your `.env` credentials
 
 **Music ID not working:**
+
 - Ensure `fpcalc` is installed and in PATH
 - Check `ACOUSTID_API_KEY` in `.env`
 
 ### Frontend Issues
 
 **Port 3000 already in use:**
+
 ```bash
 # Next.js will automatically suggest port 3001
 # Or specify a port:
@@ -145,6 +161,7 @@ npm run dev -- -p 3001
 ```
 
 **Module not found errors:**
+
 ```bash
 # Clear cache and reinstall
 rm -rf node_modules package-lock.json
@@ -164,6 +181,7 @@ npm install
 ## 🎨 Tech Stack
 
 **Frontend:**
+
 - Next.js 14
 - React
 - TypeScript
@@ -171,6 +189,7 @@ npm install
 - shadcn/ui
 
 **Backend:**
+
 - FastAPI
 - Python
 - PostgreSQL
@@ -182,12 +201,15 @@ npm install
 ## 📝 Development
 
 ### Backend Hot Reload
+
 The `--reload` flag automatically restarts the server when you make changes.
 
 ### Frontend Hot Reload
+
 Next.js automatically reloads when you save files.
 
 ### Database Migrations
+
 ```bash
 cd backend
 alembic upgrade head
@@ -195,20 +217,33 @@ alembic upgrade head
 
 ---
 
-## 🚢 Production Deployment
+## 🚢 Deployment to Free Hosting
 
-### Build Frontend
-```bash
-cd frontend
-npm run build
-npm start
-```
+**Deploy your app to the cloud for FREE!**
 
-### Run Backend in Production
-```bash
-cd backend
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
+We've prepared everything you need to deploy to **Vercel** (frontend) and **Render** (backend).
+
+### Quick Start
+
+1. Read **[DEPLOYMENT.md](DEPLOYMENT.md)** for step-by-step instructions
+2. Or use the `/deploy` workflow for guided deployment
+3. Check **[DEPLOYMENT_QUICK_REF.md](DEPLOYMENT_QUICK_REF.md)** for quick reference
+
+### What You Get
+
+- ✅ **Frontend**: Vercel (100GB bandwidth, global CDN)
+- ✅ **Backend**: Render (free web service + PostgreSQL)
+- ✅ **Cost**: $0/month
+- ✅ **Auto-deploy**: Push to GitHub → Automatic deployment
+
+### Files Ready for Deployment
+
+- `backend/.env.example` - Backend environment variables
+- `frontend/.env.local.example` - Frontend environment variables
+- `vercel.json` - Vercel configuration
+- Database supports both SQLite (local) and PostgreSQL (production)
+
+**Estimated deployment time**: 15-20 minutes
 
 ---
 
@@ -225,6 +260,7 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 ## 🆘 Need Help?
 
 If you encounter any issues:
+
 1. Check the terminal output for error messages
 2. Ensure all dependencies are installed
 3. Verify environment variables are set correctly
