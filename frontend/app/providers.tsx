@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import { ThemeProvider } from 'next-themes';
+import * as React from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { LanguageProvider } from "./i18n/LanguageContext";
 
-import { Toaster } from 'sonner';
-
-export function Providers({children}: { children: React.ReactNode }) {
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      {children}
-      <Toaster />
-    </ThemeProvider>
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <LanguageProvider>
+        {children}
+      </LanguageProvider>
+    </NextThemesProvider>
   );
 }

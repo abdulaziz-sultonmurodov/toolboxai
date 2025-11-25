@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "dashboard": "Boshqaruv paneli",
+    "audioTools": "Audio vositalari",
+    "videoTools": "Video vositalari",
+    "imageTools": "Rasm vositalari",
+    "converter": "Konvertor",
+    "socials": "Ijtimoiy tarmoqlar",
+    "musicId": "Musiqa ID",
+    "calculator": "Kalkulyator"
+  },
+  "common": {
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "delete": "O'chirish",
+    "edit": "Tahrirlash",
+    "close": "Yopish",
+    "clear": "Tozalash",
+    "loading": "Yuklanmoqda...",
+    "error": "Xato",
+    "success": "Muvaffaqiyatli",
+    "upload": "Yuklash",
+    "download": "Yuklab olish",
+    "copy": "Nusxa olish",
+    "paste": "Qo'yish",
+    "back": "Orqaga",
+    "next": "Keyingi",
+    "finish": "Tugatish"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Yangi: PDF dan Rasmga Konvertor",
+      "title": "Raqamli Hayotingizni",
+      "titleBreak": "Premium Vositalar bilan Boshqaring",
+      "subtitle": "Audio, video va rasm ishlov berish uchun AI-quvvatli vositalar to'plami. Oddiy, tez va xavfsiz. O'rnatish talab qilinmaydi.",
+      "getStarted": "Bepul Boshlash",
+      "exploreFeatures": "Imkoniyatlarni Ko'rish"
+    },
+    "stats": {
+      "users": "Foydalanuvchilar",
+      "filesProcessed": "Qayta ishlangan fayllar",
+      "uptime": "Ishlash vaqti",
+      "rating": "Reyting"
+    },
+    "features": {
+      "title": "Kerakli Hamma Narsa",
+      "subtitle": "Media fayllaringizni aniqlik va tezlik bilan qayta ishlash uchun kuchli vositalar.",
+      "audio": {
+        "title": "Audio Studiya",
+        "description": "Professional audio ishlov berish",
+        "features": ["Aqlli Kesish", "Tezlikni Boshqarish", "Format Konvertatsiyasi", "Shovqinni Kamaytirish"]
+      },
+      "video": {
+        "title": "Video Muharrir",
+        "description": "Tezkor video yaxshilash",
+        "features": ["Audioni O'chirish", "Kesish va O'lchamini O'zgartirish", "Filtrlar Qo'llash", "Siqish"]
+      },
+      "image": {
+        "title": "Rasm Laboratoriyasi",
+        "description": "Ilg'or rasm ishlov berish",
+        "features": ["Aqlli Kesish", "Filtrlar Galereyasi", "O'lchamini O'zgartirish va Siqish", "Fonni Olib Tashlash"]
+      },
+      "converter": {
+        "title": "Konvertor",
+        "description": "Universal fayl konvertatsiyasi",
+        "features": ["Rasmdan PDF", "PDF dan Rasm", "PDF dan SVG", "Guruhli Qayta Ishlash"]
+      }
+    },
+    "howItWorks": {
+      "title": "Qanday Ishlaydi",
+      "subtitle": "Mukammallikka uch oddiy qadam",
+      "step1": {
+        "title": "1. Vositani Tanlang",
+        "description": "Audio, video va rasm vositalarimizdan birini tanlang."
+      },
+      "step2": {
+        "title": "2. Yuklang va Tahrirlang",
+        "description": "Faylingizni yuklang va kerakli o'zgarishlarni darhol qo'llang."
+      },
+      "step3": {
+        "title": "3. Yuklab Oling",
+        "description": "Qayta ishlangan faylingizni darhol oling. Xavfsiz va tez."
+      }
+    },
+    "cta": {
+      "title": "Boshlashga Tayyormisiz?",
+      "subtitle": "Media qayta ishlash ehtiyojlari uchun DailyTools'ga ishongan minglab foydalanuvchilarga qo'shiling.",
+      "button": "Bepul Hisob Yaratish",
+      "note": "Bepul reja uchun kredit karta talab qilinmaydi."
+    },
+    "footer": {
+      "copyright": "© 2024 DailyTools. Barcha huquqlar himoyalangan.",
+      "privacy": "Maxfiylik",
+      "terms": "Shartlar",
+      "contact": "Aloqa"
+    }
+  },
+  "calculator": {
+    "title": "Kalkulyator",
+    "subtitle": "Barcha hisob-kitoblar uchun ko'p rejimli kalkulyator. Tez kiritish uchun klaviaturadan foydalaning!",
+    "basic": "Oddiy",
+    "scientific": "Ilmiy",
+    "programmer": "Dasturchi",
+    "date": "Sana",
+    "history": "Hisob-kitoblar tarixi",
+    "clearHistory": "Tarixni tozalash",
+    "basicCalc": "Oddiy kalkulyator",
+    "scientificCalc": "Ilmiy kalkulyator",
+    "programmerCalc": "Dasturchi kalkulyatori",
+    "dateCalc": "Sana kalkulyatori",
+    "dateDifference": "Sanalar orasidagi farqni hisoblash",
+    "addSubtractDays": "Kunlarni qo'shish/ayirish",
+    "startDate": "Boshlanish sanasi",
+    "endDate": "Tugash sanasi",
+    "daysToAdd": "Qo'shiladigan/ayiriladigan kunlar",
+    "calculateDiff": "Farqni hisoblash",
+    "calculateResult": "Natija sanasini hisoblash",
+    "result": "Natija",
+    "days": "kun",
+    "weeks": "hafta",
+    "months": "oy",
+    "years": "yil"
+  },
+  "musicId": {
+    "title": "Musiqa ID",
+    "subtitle": "Audio yozish yoki fayl yuklash orqali har qanday qo'shiqni aniqlang. Shazam kabi, lekin sizning vositalar to'plamingizda!",
+    "listenToMusic": "Musiqani tinglash",
+    "description": "30 soniyagacha tinglang yoki audio fayl yuklang. Qo'shiq avtomatik aniqlanadi!",
+    "startListening": "Tinglashni boshlash",
+    "stopListening": "Tinglashni to'xtatish",
+    "uploadFile": "Fayl yuklash",
+    "listening": "Tinglanmoqda...",
+    "identifying": "Qo'shiq aniqlanmoqda...",
+    "songTitle": "Qo'shiq nomi",
+    "artist": "Ijrochi",
+    "album": "Albom",
+    "releaseDate": "Chiqarilgan sana",
+    "notRecognized": "Qo'shiq tanilmadi. Musiqani balandroq yoki mikrofonga yaqinroq qo'yib ko'ring.",
+    "noPreview": "Bu qo'shiq uchun oldindan ko'rish mavjud emas",
+    "preview": "Oldindan ko'rish (30 soniya)",
+    "openSpotify": "Spotify'da ochish",
+    "openAppleMusic": "Apple Music'da ochish"
+  },
+  "socials": {
+    "title": "Ijtimoiy Tarmoq Yuklovchisi",
+    "subtitle": "Instagram, YouTube va boshqalardan video va audio yuklab oling",
+    "enterUrl": "URL kiriting",
+    "urlPlaceholder": "Instagram yoki YouTube URL'ini bu yerga joylashtiring...",
+    "fetchInfo": "Ma'lumot Olish",
+    "download": "Yuklab Olish",
+    "extractAudio": "Faqat Audioni Ajratib Olish"
+  },
+  "profile": {
+    "editProfile": "Profilni tahrirlash",
+    "settings": "Sozlamalar",
+    "logout": "Chiqish",
+    "theme": "Mavzu",
+    "language": "Til",
+    "lightMode": "Yorug' Rejim",
+    "darkMode": "Qorong'i Rejim"
+  }
+}

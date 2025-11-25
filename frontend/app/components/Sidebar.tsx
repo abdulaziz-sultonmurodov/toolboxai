@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Music, Video, Image as ImageIcon, FileJson, Share2, Menu, Mic, X } from 'lucide-react';
+import { LayoutDashboard, Music, Video, Image as ImageIcon, FileJson, Share2, Menu, Mic, X, Calculator } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { UserProfile } from "./UserProfile";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "../i18n/LanguageContext";
 
 type NavLink = {
   name: string;
@@ -17,13 +18,14 @@ type NavLink = {
 };
 
 const links: NavLink[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Audio Tools', href: '/dashboard/audio', icon: Music },
-  { name: 'Video Tools', href: '/dashboard/video', icon: Video },
-  { name: 'Image Tools', href: '/dashboard/image', icon: ImageIcon },
-  { name: 'Converter', href: '/dashboard/converter', icon: FileJson },
-  { name: 'Socials', href: '/dashboard/socials', icon: Share2 },
-  { name: 'Music ID', href: '/dashboard/music-id', icon: Mic, badge: 'NEW' },
+  { name: 'nav.dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'nav.audioTools', href: '/dashboard/audio', icon: Music },
+  { name: 'nav.videoTools', href: '/dashboard/video', icon: Video },
+  { name: 'nav.imageTools', href: '/dashboard/image', icon: ImageIcon },
+  { name: 'nav.converter', href: '/dashboard/converter', icon: FileJson },
+  { name: 'nav.socials', href: '/dashboard/socials', icon: Share2 },
+  { name: 'nav.musicId', href: '/dashboard/music-id', icon: Mic, badge: 'NEW' },
+  { name: 'nav.calculator', href: '/dashboard/calculator', icon: Calculator },
 ];
 
 interface SidebarProps {
@@ -34,6 +36,7 @@ interface SidebarProps {
 export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: SidebarProps) => {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const savedState = localStorage.getItem('sidebarCollapsed');
@@ -137,7 +140,7 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }: SidebarProps)
                   <Icon className="h-5 w-5 flex-shrink-0" />
                   {!isCollapsed && (
                     <>
-                      <span className="flex-1">{link.name}</span>
+                      <span className="flex-1">{t(link.name)}</span>
                       {link.badge && (
                         <Badge variant="default" className="ml-auto bg-gradient-to-r from-pink-500 to-violet-500 text-white border-0 text-xs">
                           {link.badge}

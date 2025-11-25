@@ -7,11 +7,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/app/components/ThemeToggle";
-import { FaUser, FaLock, FaCreditCard, FaPalette, FaSave } from "react-icons/fa";
+import { FaUser, FaLock, FaCreditCard, FaPalette, FaSave, FaGlobe } from "react-icons/fa";
 import Link from "next/link";
+import { useLanguage } from "../../i18n/LanguageContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
+  const { t, language, setLanguage } = useLanguage();
+
+  const languages = [
+    { code: 'en' as const, name: 'English', flag: '🇬🇧' },
+    { code: 'uz-Latn' as const, name: "O'zbekcha", flag: '🇺🇿' },
+    { code: 'uz-Cyrl' as const, name: 'Ўзбекча', flag: '🇺🇿' },
+    { code: 'ru' as const, name: 'Русский', flag: '🇷🇺' },
+  ];
 
   // Mock user data
   const [user, setUser] = useState({
@@ -180,6 +196,27 @@ export default function ProfilePage() {
                 <p className="text-sm text-muted-foreground">Switch between light and dark mode.</p>
               </div>
               <ThemeToggle />
+            </div>
+            <div className="flex items-center justify-between pt-4 border-t mt-4">
+              <div className="space-y-1">
+                <p className="font-medium">{t('profile.language')}</p>
+                <p className="text-sm text-muted-foreground">Select your preferred language.</p>
+              </div>
+              <Select value={language} onValueChange={(val: any) => setLanguage(val)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      <span className="flex items-center gap-2">
+                        <span>{lang.flag}</span>
+                        <span>{lang.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>

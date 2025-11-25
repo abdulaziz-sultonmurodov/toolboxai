@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "audioTools": "Audio Tools",
+    "videoTools": "Video Tools",
+    "imageTools": "Image Tools",
+    "converter": "Converter",
+    "socials": "Socials",
+    "musicId": "Music ID",
+    "calculator": "Calculator"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "clear": "Clear",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "upload": "Upload",
+    "download": "Download",
+    "copy": "Copy",
+    "paste": "Paste",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish"
+  },
+  "landing": {
+    "hero": {
+      "badge": "New: PDF to Image Converter",
+      "title": "Master Your Digital Life",
+      "titleBreak": "with Premium Tools",
+      "subtitle": "A complete suite of AI-powered tools for audio, video, and image processing. Simple, fast, and secure. No installation required.",
+      "getStarted": "Get Started for Free",
+      "exploreFeatures": "Explore Features"
+    },
+    "stats": {
+      "users": "Users",
+      "filesProcessed": "Files Processed",
+      "uptime": "Uptime",
+      "rating": "Rating"
+    },
+    "features": {
+      "title": "Everything You Need",
+      "subtitle": "Powerful tools designed to handle your media files with precision and speed.",
+      "audio": {
+        "title": "Audio Studio",
+        "description": "Professional audio manipulation",
+        "features": ["Smart Trimming", "Speed Control", "Format Conversion", "Noise Reduction"]
+      },
+      "video": {
+        "title": "Video Editor",
+        "description": "Quick video enhancements",
+        "features": ["Remove Audio", "Crop & Resize", "Apply Filters", "Compression"]
+      },
+      "image": {
+        "title": "Image Lab",
+        "description": "Advanced image processing",
+        "features": ["Smart Crop", "Filter Gallery", "Resize & Compress", "Background Removal"]
+      },
+      "converter": {
+        "title": "Converter",
+        "description": "Universal file conversion",
+        "features": ["Image to PDF", "PDF to Image", "PDF to SVG", "Batch Processing"]
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Three simple steps to perfection",
+      "step1": {
+        "title": "1. Choose Tool",
+        "description": "Select from our wide range of audio, video, and image tools."
+      },
+      "step2": {
+        "title": "2. Upload & Edit",
+        "description": "Upload your file and apply the desired changes instantly."
+      },
+      "step3": {
+        "title": "3. Download",
+        "description": "Get your processed file immediately. Secure and fast."
+      }
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Join thousands of users who trust DailyTools for their media processing needs.",
+      "button": "Create Free Account",
+      "note": "No credit card required for free plan."
+    },
+    "footer": {
+      "copyright": "© 2024 DailyTools. All rights reserved.",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    }
+  },
+  "calculator": {
+    "title": "Calculator",
+    "subtitle": "Multi-mode calculator for all your calculation needs. Use keyboard for quick input!",
+    "basic": "Basic",
+    "scientific": "Scientific",
+    "programmer": "Programmer",
+    "date": "Date",
+    "history": "Calculation History",
+    "clearHistory": "Clear History",
+    "basicCalc": "Basic Calculator",
+    "scientificCalc": "Scientific Calculator",
+    "programmerCalc": "Programmer Calculator",
+    "dateCalc": "Date Calculator",
+    "dateDifference": "Calculate Date Difference",
+    "addSubtractDays": "Add/Subtract Days",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "daysToAdd": "Days to Add/Subtract",
+    "calculateDiff": "Calculate Difference",
+    "calculateResult": "Calculate Result Date",
+    "result": "Result",
+    "days": "days",
+    "weeks": "weeks",
+    "months": "months",
+    "years": "years"
+  },
+  "musicId": {
+    "title": "Music ID",
+    "subtitle": "Identify any song by recording audio or uploading a file. Like Shazam, but built into your toolkit!",
+    "listenToMusic": "Listen to Music",
+    "description": "Start listening for up to 30 seconds or upload an audio file. Song will be identified automatically!",
+    "startListening": "Start Listening",
+    "stopListening": "Stop Listening",
+    "uploadFile": "Upload File",
+    "listening": "Listening...",
+    "identifying": "Identifying song...",
+    "songTitle": "Song Title",
+    "artist": "Artist",
+    "album": "Album",
+    "releaseDate": "Release Date",
+    "notRecognized": "Song not recognized. Try playing the music louder or closer to the microphone.",
+    "noPreview": "No preview available for this song",
+    "preview": "Preview (30 seconds)",
+    "openSpotify": "Open in Spotify",
+    "openAppleMusic": "Open in Apple Music"
+  },
+  "socials": {
+    "title": "Social Media Downloader",
+    "subtitle": "Download videos and audio from Instagram, YouTube, and more",
+    "enterUrl": "Enter URL",
+    "urlPlaceholder": "Paste Instagram or YouTube URL here...",
+    "fetchInfo": "Fetch Info",
+    "download": "Download",
+    "extractAudio": "Extract Audio Only"
+  },
+  "profile": {
+    "editProfile": "Edit Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "theme": "Theme",
+    "language": "Language",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  }
+}

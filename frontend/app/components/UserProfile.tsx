@@ -13,6 +13,7 @@ import {
 import { useTheme } from "next-themes";
 import { FaUser, FaSignOutAlt, FaMoon, FaSun, FaCog } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface UserProfileProps {
   isCollapsed: boolean;
@@ -21,6 +22,7 @@ interface UserProfileProps {
 export function UserProfile({ isCollapsed }: UserProfileProps) {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const { t } = useLanguage();
 
   // Mock user data - in a real app, this would come from auth context
   const user = {
@@ -79,19 +81,19 @@ export function UserProfile({ isCollapsed }: UserProfileProps) {
         
         <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
           <FaUser className="mr-2 h-4 w-4" />
-          <span>Edit Profile</span>
+          <span>{t('profile.editProfile')}</span>
         </DropdownMenuItem>
         
         <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
           {theme === "dark" ? (
             <>
               <FaSun className="mr-2 h-4 w-4" />
-              <span>Light Mode</span>
+              <span>{t('profile.lightMode')}</span>
             </>
           ) : (
             <>
               <FaMoon className="mr-2 h-4 w-4" />
-              <span>Dark Mode</span>
+              <span>{t('profile.darkMode')}</span>
             </>
           )}
         </DropdownMenuItem>
@@ -100,7 +102,7 @@ export function UserProfile({ isCollapsed }: UserProfileProps) {
         
         <DropdownMenuItem className="text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-100 dark:focus:bg-red-900/20" onClick={handleLogout}>
           <FaSignOutAlt className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>{t('profile.logout')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
